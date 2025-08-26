@@ -28,11 +28,14 @@ public class WeatherClient {
 
         WeatherDto[] weatherArray = responseEntity.getBody();
         if (!HttpStatus.OK.equals(responseEntity.getStatusCode())) {
-            throw new ServerException("날씨 데이터를 가져오는데 실패했습니다. 상태 코드: " + responseEntity.getStatusCode());
-        } else {
-            if (weatherArray == null || weatherArray.length == 0) {
-                throw new ServerException("날씨 데이터가 없습니다.");
-            }
+            throw new ServerException(
+                    "날씨 데이터를 가져오는데 실패했습니다. 상태 코드: " + responseEntity.getStatusCode());
+        }
+
+        boolean hasWeatherData = weatherArray != null && weatherArray.length > 0;
+
+        if (hasWeatherData == false) {
+            throw new ServerException("날씨 데이터가 없습니다.");
         }
 
         String today = getCurrentDate();
@@ -47,12 +50,8 @@ public class WeatherClient {
     }
 
     private URI buildWeatherApiUri() {
-        return UriComponentsBuilder
-                .fromUriString("https://f-api.github.io")
-                .path("/f-api/weather.json")
-                .encode()
-                .build()
-                .toUri();
+        return UriComponentsBuilder.fromUriString("https://f-api.github.io")
+                .path("/f-api/weather.json").encode().build().toUri();
     }
 
     private String getCurrentDate() {
