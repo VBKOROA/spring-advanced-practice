@@ -1,6 +1,7 @@
 package org.example.expert.config;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Objects;
 import org.example.expert.domain.auth.exception.AuthException;
 import org.example.expert.domain.common.annotation.Auth;
 import org.example.expert.domain.common.dto.AuthUser;
@@ -28,19 +29,24 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
     }
 
     @Override
-    public Object resolveArgument(
-            @Nullable MethodParameter parameter,
-            @Nullable ModelAndViewContainer mavContainer,
-            NativeWebRequest webRequest,
-            @Nullable WebDataBinderFactory binderFactory
-    ) {
+    public Object resolveArgument(@Nullable MethodParameter parameter,
+            @Nullable ModelAndViewContainer mavContainer, NativeWebRequest webRequest,
+            @Nullable WebDataBinderFactory binderFactory) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
 
         // JwtFilter 에서 set 한 userId, email, userRole 값을 가져옴
-        Long userId = (Long) request.getAttribute("userId");
-        String email = (String) request.getAttribute("email");
-        UserRole userRole = UserRole.of((String) request.getAttribute("userRole"));
+        try {
+            Long userId = (Long) request.getAttribute("userId");
+            String email = (String) request.getAttribute("email");
+            UserRole userRole = UserRole.of((String) request.getAttribute("userRole"));
 
-        return new AuthUser(userId, email, userRole);
+            Objects.requireNonNull(userId);
+            Objects.requireNonNull(email);
+            Objects.requireNonNull(userRole);
+
+            return new AuthUser(userId, email, userRole);
+        } catch (Exception e) {
+            throw new AuthException("유효하지 않은 인증 정보입니다.");
+        }
     }
 }
