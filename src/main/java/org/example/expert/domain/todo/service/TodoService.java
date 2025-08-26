@@ -30,21 +30,12 @@ public class TodoService {
 
         String weather = weatherClient.getTodayWeather();
 
-        Todo newTodo = new Todo(
-                todoSaveRequest.getTitle(),
-                todoSaveRequest.getContents(),
-                weather,
-                user
-        );
+        Todo newTodo =
+                new Todo(todoSaveRequest.getTitle(), todoSaveRequest.getContents(), weather, user);
         Todo savedTodo = todoRepository.save(newTodo);
 
-        return new TodoSaveResponse(
-                savedTodo.getId(),
-                savedTodo.getTitle(),
-                savedTodo.getContents(),
-                weather,
-                new UserResponse(user.getId(), user.getEmail())
-        );
+        return new TodoSaveResponse(savedTodo.getId(), savedTodo.getTitle(),
+                savedTodo.getContents(), weather, new UserResponse(user.getId(), user.getEmail()));
     }
 
     @Transactional(readOnly = true)
@@ -53,32 +44,21 @@ public class TodoService {
 
         Page<Todo> todos = todoRepository.findAllByOrderByModifiedAtDesc(pageable);
 
-        return todos.map(todo -> new TodoResponse(
-                todo.getId(),
-                todo.getTitle(),
-                todo.getContents(),
+        return todos.map(todo -> new TodoResponse(todo.getId(), todo.getTitle(), todo.getContents(),
                 todo.getWeather(),
                 new UserResponse(todo.getUser().getId(), todo.getUser().getEmail()),
-                todo.getCreatedAt(),
-                todo.getModifiedAt()
-        ));
+                todo.getCreatedAt(), todo.getModifiedAt()));
     }
 
     @Transactional(readOnly = true)
     public TodoResponse getTodo(long todoId) {
-        Todo todo = todoRepository.findByIdWithUser(todoId)
+        Todo todo = todoRepository.findWithUserById(todoId)
                 .orElseThrow(() -> new InvalidRequestException("Todo not found"));
 
         User user = todo.getUser();
 
-        return new TodoResponse(
-                todo.getId(),
-                todo.getTitle(),
-                todo.getContents(),
-                todo.getWeather(),
-                new UserResponse(user.getId(), user.getEmail()),
-                todo.getCreatedAt(),
-                todo.getModifiedAt()
-        );
+        return new TodoResponse(todo.getId(), todo.getTitle(), todo.getContents(),
+                todo.getWeather(), new UserResponse(user.getId(), user.getEmail()),
+                todo.getCreatedAt(), todo.getModifiedAt());
     }
 }
