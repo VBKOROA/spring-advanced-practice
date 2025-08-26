@@ -40,4 +40,4 @@ out/
 *.properties
 
 ### yml ###
-*.yml
+application-dev.yml
