@@ -16,6 +16,6 @@ public class UserChangePasswordRequest {
     private String oldPassword;
     @NotBlank
     @Size(min = 8)
-    @Pattern(regexp = "^(?=.*\\d)(?=.*[A-Z]).*$")
+    @Pattern(regexp = "^(?=.*\\d)(?=.*[A-Z]).*$", message = "숫자와 대문자를 포함해야 합니다.")
     private String newPassword;
 }
