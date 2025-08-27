@@ -60,12 +60,15 @@ public class AdminLoggingAspect {
         Object result = null;
         try {
             result = joinPoint.proceed();
-            log.info("RESPONSE BODY: {}", objectMapper.writeValueAsString(result));
+            if (result != null) {
+                log.info("RESPONSE BODY: {}", objectMapper.writeValueAsString(result));
+            }
         } catch (Exception e) {
             log.error("ERROR OCCURRED: [{}] {}", e.getClass(), e.getMessage());
             throw e;
+        } finally {
+            log.info("= LOG FINISHED =");
         }
-        log.info("= LOG FINISHED =");
         return result;
     }
 
