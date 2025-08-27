@@ -1,0 +1,23 @@
+meta {
+  name: 관리자 회원가입
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{globalUrl}}/auth/signup
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "email": "abkop@abko.com",
+    "password": "{{globalPswd}}",
+    "userRole": "ADMIN"
+  }
+}
+
+settings {
+  encodeUrl: true
+}
