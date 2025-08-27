@@ -61,7 +61,7 @@ public class AdminLoggingAspect {
         try {
             result = joinPoint.proceed();
             if (result != null) {
-                log.info("RESPONSE BODY: {}", objectMapper.writeValueAsString(result));
+                log.info("RESPONSE BODY: {}", jsonOrNull(result));
             }
         } catch (Exception e) {
             log.error("ERROR OCCURRED: [{}] {}", e.getClass(), e.getMessage());
@@ -72,13 +72,13 @@ public class AdminLoggingAspect {
         return result;
     }
 
-    private void logRequestBody(Object[] args) throws JsonProcessingException {
+    private void logRequestBody(Object[] args) {
         for (Object arg : args) {
             if (arg == null) {
                 continue;
             }
             if (requestBodyClazz.contains(arg.getClass())) {
-                log.info("REQUEST BODY: {}", objectMapper.writeValueAsString(arg));
+                log.info("REQUEST BODY: {}", jsonOrNull(arg));
                 break;
             }
         }
@@ -87,5 +87,14 @@ public class AdminLoggingAspect {
     private String getRequestUserEmail(HttpServletRequest request) {
         return Optional.ofNullable(request.getAttribute("email")).map(Object::toString)
                 .orElse("Anon");
+    }
+
+    private String jsonOrNull(Object data) {
+        try {
+            return objectMapper.writeValueAsString(data);
+        } catch (JsonProcessingException e) {
+            log.error("ERROR OCCURRED: {}", e.getMessage());
+            return null;
+        }
     }
 }
