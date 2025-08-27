@@ -1,0 +1,26 @@
+meta {
+  name: 할 일 작성
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{globalUrl}}/todos
+  body: json
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{globalAccessToken}}
+}
+
+body:json {
+  {
+    "title": "title",
+    "contents": "contents"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

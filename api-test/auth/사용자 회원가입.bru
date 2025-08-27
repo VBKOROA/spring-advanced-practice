@@ -1,0 +1,23 @@
+meta {
+  name: 사용자 회원가입
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{globalUrl}}/auth/signup
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "email": "abko@abko.com",
+    "password": "{{globalPswd}}",
+    "userRole": "USER"
+  }
+}
+
+settings {
+  encodeUrl: true
+}
