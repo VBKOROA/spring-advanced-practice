@@ -1,0 +1,29 @@
+meta {
+  name: 할 일 담당자 추가
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{globalUrl}}/todos/{{todoId}}/managers
+  body: json
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{globalAccessToken}}
+}
+
+body:json {
+  {
+    "managerUserId": 2
+  }
+}
+
+vars:pre-request {
+  todoId: 1
+}
+
+settings {
+  encodeUrl: true
+}

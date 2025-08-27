@@ -1,0 +1,24 @@
+meta {
+  name: 할 일 담당자 제거
+  type: http
+  seq: 2
+}
+
+delete {
+  url: {{globalUrl}}/todos/{{todoId}}/managers/{{managerId}}
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{globalAccessToken}}
+}
+
+vars:pre-request {
+  todoId: 1
+  managerId: 1
+}
+
+settings {
+  encodeUrl: true
+}
