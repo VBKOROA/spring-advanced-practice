@@ -86,4 +86,16 @@ class TodoControllerTest {
         mockMvc.perform(get("/todos")).andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.length()").value(1));
     }
+
+    @Test
+    void todoId로_Todo를_조회할수_있다() throws Exception {
+        // given
+        TodoResponse todoResponse = new TodoResponse(1L, "null", "null", "null", null, null, null);
+
+        given(todoService.getTodo(1L)).willReturn(todoResponse);
+
+        // when & then
+        mockMvc.perform(get("/todos/1")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(todoResponse.getId()));
+    }
 }
