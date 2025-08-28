@@ -25,13 +25,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 
 @WebMvcTest(UserController.class)
 class UserControllerTest {
+    @Autowired
     private MockMvc mockMvc;
 
     @MockBean
@@ -53,9 +53,6 @@ class UserControllerTest {
         });
         given(authUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
                 .willReturn(authUser);
-
-        mockMvc = MockMvcBuilders.standaloneSetup(new UserController(userService))
-                .setCustomArgumentResolvers(authUserArgumentResolver).build();
     }
 
     @Test
