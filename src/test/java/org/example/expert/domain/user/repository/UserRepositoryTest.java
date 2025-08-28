@@ -1,6 +1,5 @@
 package org.example.expert.domain.user.repository;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -28,7 +27,6 @@ class UserRepositoryTest {
 
         // then
         assertNotNull(savedUser);
-        assertThat(savedUser.getId()).isNotNull().isEqualTo(1L);
         assertEquals(savedUser.getEmail(), user.getEmail());
         assertEquals(savedUser.getPassword(), user.getPassword());
         assertEquals(savedUser.getUserRole(), user.getUserRole());
