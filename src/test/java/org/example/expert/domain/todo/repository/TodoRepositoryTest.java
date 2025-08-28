@@ -62,7 +62,7 @@ class TodoRepositoryTest {
         Todo savedTodo = todoRepository.save(todo);
 
         // when
-        Optional<Todo> todoOpt = todoRepository.findWithUserById(1L);
+        Optional<Todo> todoOpt = todoRepository.findWithUserById(savedTodo.getId());
 
         // then
         assertTrue(todoOpt.isPresent());
