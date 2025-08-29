@@ -2,6 +2,7 @@ package org.example.expert.domain.todo.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import org.example.expert.client.WeatherClient;
 import org.example.expert.domain.common.dto.AuthUser;
+import org.example.expert.domain.common.exception.InvalidRequestException;
 import org.example.expert.domain.todo.TodoHelper;
 import org.example.expert.domain.todo.dto.request.TodoSaveRequest;
 import org.example.expert.domain.todo.dto.response.TodoResponse;
@@ -20,6 +22,7 @@ import org.example.expert.domain.todo.repository.TodoRepository;
 import org.example.expert.domain.user.entity.User;
 import org.example.expert.domain.user.enums.UserRole;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -97,23 +100,35 @@ class TodoServiceTest {
         assertEquals(1L, singleResp.getId());
     }
 
-    @Test
-    @DisplayName("Todo 가져오기 테스트")
-    void todoId로_Todo를_가져올수_있다() {
-        // given
-        User user = new User("null", "null", UserRole.ADMIN);
-        ReflectionTestUtils.setField(user, "id", 1L);
+    @Nested
+    class 단일_Todo_가져오기_테스트 {
+        @Test
+        @DisplayName("Todo 가져오기 테스트")
+        void todoId로_Todo를_가져올수_있다() {
+            // given
+            User user = new User("null", "null", UserRole.ADMIN);
+            ReflectionTestUtils.setField(user, "id", 1L);
 
-        Todo todo1 = TodoHelper.createSingleDummy(user);
-        ReflectionTestUtils.setField(todo1, "id", 1L);
-        ReflectionTestUtils.setField(todo1, "createdAt", LocalDateTime.now());
-        ReflectionTestUtils.setField(todo1, "modifiedAt", todo1.getCreatedAt());
+            Todo todo1 = TodoHelper.createSingleDummy(user);
+            ReflectionTestUtils.setField(todo1, "id", 1L);
+            ReflectionTestUtils.setField(todo1, "createdAt", LocalDateTime.now());
+            ReflectionTestUtils.setField(todo1, "modifiedAt", todo1.getCreatedAt());
 
-        given(todoRepository.findWithUserById(anyLong())).willReturn(Optional.of(todo1));
+            given(todoRepository.findWithUserById(anyLong())).willReturn(Optional.of(todo1));
 
-        // when
-        TodoResponse resp = todoService.getTodo(1L);
-        assertNotNull(resp);
-        assertEquals(1L, resp.getId());
+            // when
+            TodoResponse resp = todoService.getTodo(1L);
+            assertNotNull(resp);
+            assertEquals(1L, resp.getId());
+        }
+
+        @Test
+        void 조회된_Todo가_없으면_실패한다() {
+            // given
+            given(todoRepository.findWithUserById(anyLong())).willReturn(Optional.empty());
+
+            // when & then
+            assertThrows(InvalidRequestException.class, () -> todoService.getTodo(1L));
+        }
     }
 }
