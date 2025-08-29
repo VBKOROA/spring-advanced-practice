@@ -36,23 +36,36 @@ class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
-    @Test
-    @DisplayName("기본키로 User 가져오기 테스트")
-    void userId로_User를_가져올수_있다() {
-        // given
-        User user = new User("null", "null", UserRole.USER);
+    @Nested
+    class 단일_유저조회_테스트 {
+        @Test
+        @DisplayName("기본키로 User 가져오기 테스트")
+        void userId로_User를_가져올수_있다() {
+            // given
+            User user = new User("null", "null", UserRole.USER);
 
-        ReflectionTestUtils.setField(user, "id", 1L);
-        given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
+            ReflectionTestUtils.setField(user, "id", 1L);
+            given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
 
-        // when
-        UserResponse userResponse = userService.getUser(1L);
+            // when
+            UserResponse userResponse = userService.getUser(1L);
 
-        // then
-        assertNotNull(userResponse);
-        assertEquals(userResponse.getId(), user.getId());
-        assertEquals(userResponse.getEmail(), user.getEmail());
+            // then
+            assertNotNull(userResponse);
+            assertEquals(userResponse.getId(), user.getId());
+            assertEquals(userResponse.getEmail(), user.getEmail());
+        }
+
+        @Test
+        void 존재하지않는_userId면_실패한다() {
+            // given
+            given(userRepository.findById(anyLong())).willReturn(Optional.empty());
+
+            // when & then
+            assertThrows(InvalidRequestException.class, () -> userService.getUser(1L));
+        }
     }
+
 
     @Nested
     class 비밀번호_변경_테스트 {
@@ -82,6 +95,17 @@ class UserServiceTest {
         void 비밀번호가_유효하지않으면_예외를_던진다(String newPassword) {
             // given
             UserChangePasswordRequest req = new UserChangePasswordRequest(oldPassword, newPassword);
+
+            // when & then
+            assertThrows(InvalidRequestException.class, () -> userService.changePassword(1L, req));
+        }
+
+        @Test
+        void 조회된_User가_없으면_실패한다() {
+            // given
+            UserChangePasswordRequest req = new UserChangePasswordRequest(oldPassword, newPassword);
+
+            given(userRepository.findById(anyLong())).willReturn(Optional.empty());
 
             // when & then
             assertThrows(InvalidRequestException.class, () -> userService.changePassword(1L, req));
