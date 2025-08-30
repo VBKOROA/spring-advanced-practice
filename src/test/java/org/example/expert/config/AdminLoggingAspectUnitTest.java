@@ -14,6 +14,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import org.example.expert.domain.user.dto.request.UserRoleChangeRequest;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -143,5 +145,21 @@ class AdminLoggingAspectUnitTest {
         // then
         assertNotNull(result);
         assertTrue(result instanceof Unserializable);
+    }
+
+    @Test
+    void 관리자API_요청본문_타입일치() throws Throwable {
+        // given
+        given(requestAttributes.getRequest()).willReturn(request);
+        given(request.getRequestURI()).willReturn("/test");
+        given(request.getAttribute("email")).willReturn("null");
+        var requestBody = new UserRoleChangeRequest();
+        given(joinPoint.getArgs()).willReturn(new Object[] {requestBody});
+
+        // when
+        aspect.logAdminApi(joinPoint);
+
+        // then
+        then(joinPoint).should().proceed();
     }
 }
