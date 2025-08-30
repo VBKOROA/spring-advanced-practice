@@ -86,4 +86,62 @@ class AdminLoggingAspectUnitTest {
         // when & then
         assertThrows(RuntimeException.class, () -> aspect.logAdminApi(joinPoint));
     }
+
+    @Test
+    void 관리자API_요청본문_커버리지() throws Throwable {
+        // given
+        given(requestAttributes.getRequest()).willReturn(request);
+        given(request.getRequestURI()).willReturn("/test");
+        given(request.getAttribute("email")).willReturn("null");
+        given(joinPoint.getArgs()).willReturn(new Object[] {null, "some string"});
+
+        // when
+        aspect.logAdminApi(joinPoint);
+
+        // then
+        then(joinPoint).should().proceed();
+    }
+
+    static class Unserializable {
+        private final Unserializable self = this;
+
+        @Override
+        public String toString() {
+            return self.getClass().getName();
+        }
+    }
+
+    @Test
+    void 관리자API_요청본문_직렬화_실패() throws Throwable {
+        // given
+        given(requestAttributes.getRequest()).willReturn(request);
+        given(request.getRequestURI()).willReturn("/test");
+        given(request.getAttribute("email")).willReturn("null");
+        var map = new HashMap<String, Object>();
+        map.put("key", new Unserializable());
+        given(joinPoint.getArgs()).willReturn(new Object[] {map});
+
+        // when
+        aspect.logAdminApi(joinPoint);
+
+        // then
+        then(joinPoint).should().proceed();
+    }
+
+    @Test
+    void 관리자API_응답_직렬화_실패() throws Throwable {
+        // given
+        given(requestAttributes.getRequest()).willReturn(request);
+        given(request.getRequestURI()).willReturn("/test");
+        given(request.getAttribute("email")).willReturn("null");
+        given(joinPoint.getArgs()).willReturn(new Object[] {});
+        given(joinPoint.proceed()).willReturn(new Unserializable());
+
+        // when
+        Object result = aspect.logAdminApi(joinPoint);
+
+        // then
+        assertNotNull(result);
+        assertTrue(result instanceof Unserializable);
+    }
 }
