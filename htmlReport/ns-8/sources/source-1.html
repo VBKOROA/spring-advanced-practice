@@ -1,0 +1,192 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > AuthService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.example.expert.domain.auth.service</a>
+</div>
+
+<h1>Coverage Summary for Class: AuthService (org.example.expert.domain.auth.service)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AuthService</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (14/14)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">AuthService$$SpringCGLIB$$0</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (14/14)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.example.expert.domain.auth.service;
+&nbsp;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import org.example.expert.config.JwtUtil;
+&nbsp;import org.example.expert.config.PasswordEncoder;
+&nbsp;import org.example.expert.domain.auth.dto.request.SigninRequest;
+&nbsp;import org.example.expert.domain.auth.dto.request.SignupRequest;
+&nbsp;import org.example.expert.domain.auth.dto.response.SigninResponse;
+&nbsp;import org.example.expert.domain.auth.dto.response.SignupResponse;
+&nbsp;import org.example.expert.domain.auth.exception.AuthException;
+&nbsp;import org.example.expert.domain.common.exception.InvalidRequestException;
+&nbsp;import org.example.expert.domain.user.entity.User;
+&nbsp;import org.example.expert.domain.user.enums.UserRole;
+&nbsp;import org.example.expert.domain.user.repository.UserRepository;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;
+&nbsp;@Service
+&nbsp;@RequiredArgsConstructor
+&nbsp;public class AuthService {
+&nbsp;
+&nbsp;    private final UserRepository userRepository;
+&nbsp;    private final PasswordEncoder passwordEncoder;
+&nbsp;    private final JwtUtil jwtUtil;
+&nbsp;
+&nbsp;    @Transactional
+&nbsp;    public SignupResponse signup(SignupRequest signupRequest) {
+<b class="fc">&nbsp;        if (userRepository.existsByEmail(signupRequest.getEmail())) {</b>
+<b class="fc">&nbsp;            throw new InvalidRequestException(&quot;이미 존재하는 이메일입니다.&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        String encodedPassword = passwordEncoder.encode(signupRequest.getPassword());</b>
+&nbsp;
+<b class="fc">&nbsp;        UserRole userRole = UserRole.of(signupRequest.getUserRole());</b>
+&nbsp;
+<b class="fc">&nbsp;        User newUser = new User(signupRequest.getEmail(), encodedPassword, userRole);</b>
+<b class="fc">&nbsp;        User savedUser = userRepository.save(newUser);</b>
+&nbsp;
+<b class="fc">&nbsp;        String bearerToken = jwtUtil.createToken(savedUser.getId(), savedUser.getEmail(), userRole);</b>
+&nbsp;
+<b class="fc">&nbsp;        return new SignupResponse(bearerToken);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Transactional(readOnly = true)
+&nbsp;    public SigninResponse signin(SigninRequest signinRequest) {
+<b class="fc">&nbsp;        User user = userRepository.findByEmail(signinRequest.getEmail())</b>
+<b class="fc">&nbsp;                .orElseThrow(() -&gt; new InvalidRequestException(&quot;가입되지 않은 유저입니다.&quot;));</b>
+&nbsp;
+&nbsp;        // 로그인 시 이메일과 비밀번호가 일치하지 않을 경우 401을 반환합니다.
+<b class="fc">&nbsp;        if (!passwordEncoder.matches(signinRequest.getPassword(), user.getPassword())) {</b>
+<b class="fc">&nbsp;            throw new AuthException(&quot;잘못된 비밀번호입니다.&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        String bearerToken = jwtUtil.createToken(user.getId(), user.getEmail(), user.getUserRole());</b>
+&nbsp;
+<b class="fc">&nbsp;        return new SigninResponse(bearerToken);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-08-30 20:18</div>
+</div>
+</body>
+</html>

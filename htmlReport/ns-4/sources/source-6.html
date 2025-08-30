@@ -1,0 +1,181 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > JwtUtil</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.example.expert.config</a>
+</div>
+
+<h1>Coverage Summary for Class: JwtUtil (org.example.expert.config)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">JwtUtil</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (24/24)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.example.expert.config;
+&nbsp;
+&nbsp;import io.jsonwebtoken.Claims;
+&nbsp;import io.jsonwebtoken.Jwts;
+&nbsp;import io.jsonwebtoken.SignatureAlgorithm;
+&nbsp;import io.jsonwebtoken.security.Keys;
+&nbsp;import jakarta.annotation.PostConstruct;
+&nbsp;import lombok.extern.slf4j.Slf4j;
+&nbsp;import org.example.expert.domain.common.exception.ServerException;
+&nbsp;import org.example.expert.domain.user.enums.UserRole;
+&nbsp;import org.springframework.beans.factory.annotation.Value;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;import org.springframework.util.StringUtils;
+&nbsp;
+&nbsp;import java.security.Key;
+&nbsp;import java.util.Base64;
+&nbsp;import java.util.Date;
+&nbsp;
+<b class="fc">&nbsp;@Slf4j(topic = &quot;JwtUtil&quot;)</b>
+&nbsp;@Component
+<b class="fc">&nbsp;public class JwtUtil {</b>
+&nbsp;
+&nbsp;    private static final String BEARER_PREFIX = &quot;Bearer &quot;;
+&nbsp;    private static final long TOKEN_TIME = 60 * 60 * 1000L; // 60분
+&nbsp;
+&nbsp;    @Value(&quot;${jwt.secret.key}&quot;)
+&nbsp;    private String secretKey;
+&nbsp;    private Key key;
+<b class="fc">&nbsp;    private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;</b>
+&nbsp;
+&nbsp;    @PostConstruct
+&nbsp;    public void init() {
+<b class="fc">&nbsp;        byte[] bytes = Base64.getDecoder().decode(secretKey);</b>
+<b class="fc">&nbsp;        key = Keys.hmacShaKeyFor(bytes);</b>
+<b class="fc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    public String createToken(Long userId, String email, UserRole userRole) {
+<b class="fc">&nbsp;        Date date = new Date();</b>
+&nbsp;
+<b class="fc">&nbsp;        return BEARER_PREFIX +</b>
+<b class="fc">&nbsp;                Jwts.builder()</b>
+<b class="fc">&nbsp;                        .setSubject(String.valueOf(userId))</b>
+<b class="fc">&nbsp;                        .claim(&quot;email&quot;, email)</b>
+<b class="fc">&nbsp;                        .claim(&quot;userRole&quot;, userRole)</b>
+<b class="fc">&nbsp;                        .setExpiration(new Date(date.getTime() + TOKEN_TIME))</b>
+<b class="fc">&nbsp;                        .setIssuedAt(date) // 발급일</b>
+<b class="fc">&nbsp;                        .signWith(key, signatureAlgorithm) // 암호화 알고리즘</b>
+<b class="fc">&nbsp;                        .compact();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String substringToken(String tokenValue) {
+<b class="fc">&nbsp;        if (StringUtils.hasText(tokenValue) &amp;&amp; tokenValue.startsWith(BEARER_PREFIX)) {</b>
+<b class="fc">&nbsp;            return tokenValue.substring(7);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        throw new ServerException(&quot;Not Found Token&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Claims extractClaims(String token) {
+<b class="fc">&nbsp;        return Jwts.parserBuilder()</b>
+<b class="fc">&nbsp;                .setSigningKey(key)</b>
+<b class="fc">&nbsp;                .build()</b>
+<b class="fc">&nbsp;                .parseClaimsJws(token)</b>
+<b class="fc">&nbsp;                .getBody();</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-08-30 20:18</div>
+</div>
+</body>
+</html>
