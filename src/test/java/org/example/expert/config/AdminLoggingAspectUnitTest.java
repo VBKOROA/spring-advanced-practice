@@ -41,7 +41,7 @@ class AdminLoggingAspectUnitTest {
     }
 
     @Test
-    void testLogAdminApi_Success_WithResponse() throws Throwable {
+    void 관리자API_성공_응답있음() throws Throwable {
         // given
         given(requestAttributes.getRequest()).willReturn(request);
         given(request.getRequestURI()).willReturn("/test");
@@ -58,7 +58,7 @@ class AdminLoggingAspectUnitTest {
     }
 
     @Test
-    void testLogAdminApi_Success_NoResponse() throws Throwable {
+    void 관리자API_성공_응답없음() throws Throwable {
         // given
         given(requestAttributes.getRequest()).willReturn(request);
         given(request.getRequestURI()).willReturn("/test");
@@ -75,7 +75,7 @@ class AdminLoggingAspectUnitTest {
     }
 
     @Test
-    void testLogAdminApi_Exception() throws Throwable {
+    void 관리자API_예외_발생() throws Throwable {
         // given
         given(requestAttributes.getRequest()).willReturn(request);
         given(request.getRequestURI()).willReturn("/test");
