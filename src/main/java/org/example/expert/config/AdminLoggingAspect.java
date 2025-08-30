@@ -31,13 +31,7 @@ public class AdminLoggingAspect {
         requestBodyClazz.add(UserRoleChangeRequest.class);
     }
 
-    @Pointcut("execution(* org.example.expert.domain.comment.controller.CommentAdminController.deleteComment(..))")
-    public void deleteCommentPointcut() {}
-
-    @Pointcut("execution(* org.example.expert.domain.user.controller.UserAdminController.changeUserRole(..))")
-    public void changeUserRolePointcut() {}
-
-    @Around("deleteCommentPointcut() || changeUserRolePointcut()")
+    @Around("@annotation(org.example.expert.config.AdminLogging)")
     public Object logAdminApi(ProceedingJoinPoint joinPoint) throws Throwable {
         HttpServletRequest request =
                 ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
