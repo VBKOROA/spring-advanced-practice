@@ -41,3 +41,6 @@ out/
 
 ### yml ###
 application-dev.yml
+
+### jacoco test ###
+jacoco

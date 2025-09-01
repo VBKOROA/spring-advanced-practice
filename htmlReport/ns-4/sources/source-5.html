@@ -1,0 +1,210 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > JwtFilter</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.example.expert.config</a>
+</div>
+
+<h1>Coverage Summary for Class: JwtFilter (org.example.expert.config)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">JwtFilter</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (10/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (46/46)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.example.expert.config;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.databind.ObjectMapper;
+&nbsp;import io.jsonwebtoken.Claims;
+&nbsp;import io.jsonwebtoken.ExpiredJwtException;
+&nbsp;import io.jsonwebtoken.MalformedJwtException;
+&nbsp;import io.jsonwebtoken.UnsupportedJwtException;
+&nbsp;import jakarta.servlet.*;
+&nbsp;import jakarta.servlet.http.HttpServletRequest;
+&nbsp;import jakarta.servlet.http.HttpServletResponse;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import lombok.extern.slf4j.Slf4j;
+&nbsp;import org.example.expert.domain.user.enums.UserRole;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.Map;
+&nbsp;
+<b class="fc">&nbsp;@Slf4j</b>
+&nbsp;@RequiredArgsConstructor
+&nbsp;public class JwtFilter implements Filter {
+&nbsp;
+&nbsp;    private final JwtUtil jwtUtil;
+&nbsp;    private final ObjectMapper objectMapper;
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+<b class="fc">&nbsp;        HttpServletRequest httpRequest = (HttpServletRequest) request;</b>
+<b class="fc">&nbsp;        HttpServletResponse httpResponse = (HttpServletResponse) response;</b>
+&nbsp;
+<b class="fc">&nbsp;        String url = httpRequest.getRequestURI();</b>
+&nbsp;
+<b class="fc">&nbsp;        if (url.startsWith(&quot;/auth&quot;)) {</b>
+<b class="fc">&nbsp;            chain.doFilter(request, response);</b>
+<b class="fc">&nbsp;            return;</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        String bearerJwt = httpRequest.getHeader(&quot;Authorization&quot;);</b>
+&nbsp;
+<b class="fc">&nbsp;        if (bearerJwt == null) {</b>
+<b class="fc">&nbsp;            log.warn(&quot;인증 헤더 누락: URI={}&quot;, url);</b>
+<b class="fc">&nbsp;            sendErrorResponse(httpResponse, HttpStatus.UNAUTHORIZED, &quot;인증이 필요합니다.&quot;);</b>
+<b class="fc">&nbsp;            return;</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        String jwt = jwtUtil.substringToken(bearerJwt);</b>
+&nbsp;
+&nbsp;        try {
+&nbsp;            // JWT 유효성 검사와 claims 추출
+<b class="fc">&nbsp;            Claims claims = jwtUtil.extractClaims(jwt);</b>
+<b class="fc">&nbsp;            if (claims == null) {</b>
+<b class="fc">&nbsp;                log.warn(&quot;Claims 추출 실패: URI={}&quot;, url);</b>
+<b class="fc">&nbsp;                sendErrorResponse(httpResponse, HttpStatus.UNAUTHORIZED, &quot;인증이 필요합니다.&quot;);</b>
+<b class="fc">&nbsp;                return;</b>
+&nbsp;            }
+&nbsp;
+<b class="fc">&nbsp;            UserRole userRole = UserRole.valueOf(claims.get(&quot;userRole&quot;, String.class));</b>
+&nbsp;
+<b class="fc">&nbsp;            httpRequest.setAttribute(&quot;userId&quot;, Long.parseLong(claims.getSubject()));</b>
+<b class="fc">&nbsp;            httpRequest.setAttribute(&quot;email&quot;, claims.get(&quot;email&quot;));</b>
+<b class="fc">&nbsp;            httpRequest.setAttribute(&quot;userRole&quot;, claims.get(&quot;userRole&quot;));</b>
+&nbsp;
+<b class="fc">&nbsp;            if (url.startsWith(&quot;/admin&quot;) &amp;&amp; !UserRole.ADMIN.equals(userRole)) {</b>
+<b class="fc">&nbsp;                log.warn(&quot;권한 부족: userId={}, role={}, URI={}&quot;, claims.getSubject(), userRole, url);</b>
+<b class="fc">&nbsp;                sendErrorResponse(httpResponse, HttpStatus.FORBIDDEN, &quot;접근 권한이 없습니다.&quot;);</b>
+<b class="fc">&nbsp;                return;</b>
+&nbsp;            }
+&nbsp;
+<b class="fc">&nbsp;            chain.doFilter(request, response);</b>
+<b class="fc">&nbsp;        } catch (ExpiredJwtException e) {</b>
+<b class="fc">&nbsp;            log.info(&quot;JWT 만료: userId={}, URI={}&quot;, e.getClaims().getSubject(), url);</b>
+<b class="fc">&nbsp;            sendErrorResponse(httpResponse, HttpStatus.UNAUTHORIZED, &quot;인증이 필요합니다.&quot;);</b>
+<b class="fc">&nbsp;        } catch (SecurityException | MalformedJwtException | UnsupportedJwtException e) {</b>
+<b class="fc">&nbsp;            log.error(&quot;JWT 검증 실패 [{}]: URI={}&quot;, e.getClass().getSimpleName(), url, e);</b>
+<b class="fc">&nbsp;            sendErrorResponse(httpResponse, HttpStatus.BAD_REQUEST, &quot;인증이 필요합니다.&quot;);</b>
+<b class="fc">&nbsp;        } catch (Exception e) {</b>
+<b class="fc">&nbsp;            log.error(&quot;예상치 못한 오류: URI={}&quot;, url, e);</b>
+<b class="fc">&nbsp;            sendErrorResponse(httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, &quot;요청 처리 중 오류가 발생했습니다.&quot;);</b>
+<b class="fc">&nbsp;        }</b>
+<b class="fc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    private void sendErrorResponse(HttpServletResponse response, HttpStatus status, String message) throws IOException {
+<b class="fc">&nbsp;        response.setStatus(status.value());</b>
+<b class="fc">&nbsp;        response.setContentType(&quot;application/json;charset=UTF-8&quot;);</b>
+&nbsp;
+<b class="fc">&nbsp;        Map&lt;String, Object&gt; errorResponse = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;        errorResponse.put(&quot;status&quot;, status.name());</b>
+<b class="fc">&nbsp;        errorResponse.put(&quot;code&quot;, status.value());</b>
+<b class="fc">&nbsp;        errorResponse.put(&quot;message&quot;, message);</b>
+&nbsp;
+<b class="fc">&nbsp;        response.getWriter().write(objectMapper.writeValueAsString(errorResponse));</b>
+<b class="fc">&nbsp;    }</b>
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-08-30 20:18</div>
+</div>
+</body>
+</html>

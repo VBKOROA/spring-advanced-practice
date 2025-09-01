@@ -1,0 +1,145 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > TodoController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.example.expert.domain.todo.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: TodoController (org.example.expert.domain.todo.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TodoController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.example.expert.domain.todo.controller;
+&nbsp;
+&nbsp;import jakarta.validation.Valid;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import org.example.expert.domain.common.annotation.Auth;
+&nbsp;import org.example.expert.domain.common.dto.AuthUser;
+&nbsp;import org.example.expert.domain.todo.dto.request.TodoSaveRequest;
+&nbsp;import org.example.expert.domain.todo.dto.response.TodoResponse;
+&nbsp;import org.example.expert.domain.todo.dto.response.TodoSaveResponse;
+&nbsp;import org.example.expert.domain.todo.service.TodoService;
+&nbsp;import org.springframework.data.domain.Page;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequiredArgsConstructor
+&nbsp;public class TodoController {
+&nbsp;
+&nbsp;    private final TodoService todoService;
+&nbsp;
+&nbsp;    @PostMapping(&quot;/todos&quot;)
+&nbsp;    public ResponseEntity&lt;TodoSaveResponse&gt; saveTodo(
+&nbsp;            @Auth AuthUser authUser,
+&nbsp;            @Valid @RequestBody TodoSaveRequest todoSaveRequest
+&nbsp;    ) {
+<b class="fc">&nbsp;        return ResponseEntity.ok(todoService.saveTodo(authUser, todoSaveRequest));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/todos&quot;)
+&nbsp;    public ResponseEntity&lt;Page&lt;TodoResponse&gt;&gt; getTodos(
+&nbsp;            @RequestParam(defaultValue = &quot;1&quot;) int page,
+&nbsp;            @RequestParam(defaultValue = &quot;10&quot;) int size
+&nbsp;    ) {
+<b class="fc">&nbsp;        return ResponseEntity.ok(todoService.getTodos(page, size));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/todos/{todoId}&quot;)
+&nbsp;    public ResponseEntity&lt;TodoResponse&gt; getTodo(@PathVariable long todoId) {
+<b class="fc">&nbsp;        return ResponseEntity.ok(todoService.getTodo(todoId));</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-08-30 20:18</div>
+</div>
+</body>
+</html>

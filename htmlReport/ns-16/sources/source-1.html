@@ -1,0 +1,177 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Todo</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.example.expert.domain.todo.entity</a>
+</div>
+
+<h1>Coverage Summary for Class: Todo (org.example.expert.domain.todo.entity)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Todo</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (12/12)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Todo$HibernateInstantiator$BQMH82ow</td>
+  </tr>
+  <tr>
+    <td class="name">Todo$HibernateInstantiator$rkzagaYj</td>
+  </tr>
+  <tr>
+    <td class="name">Todo$HibernateInstantiator$WudWeVPY</td>
+  </tr>
+  <tr>
+    <td class="name">Todo$HibernateProxy$gwfJSbFF</td>
+  </tr>
+  <tr>
+    <td class="name">Todo$HibernateProxy$TjFVY67j</td>
+  </tr>
+  <tr>
+    <td class="name">Todo$HibernateProxy$uyeD0flg</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (12/12)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.example.expert.domain.todo.entity;
+&nbsp;
+&nbsp;import jakarta.persistence.*;
+&nbsp;import lombok.Getter;
+&nbsp;import lombok.NoArgsConstructor;
+&nbsp;import org.example.expert.domain.comment.entity.Comment;
+&nbsp;import org.example.expert.domain.common.entity.Timestamped;
+&nbsp;import org.example.expert.domain.manager.entity.Manager;
+&nbsp;import org.example.expert.domain.user.entity.User;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@Getter
+&nbsp;@Entity
+&nbsp;@NoArgsConstructor
+&nbsp;@Table(name = &quot;todos&quot;)
+&nbsp;public class Todo extends Timestamped {
+&nbsp;
+&nbsp;    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+&nbsp;    private Long id;
+&nbsp;    private String title;
+&nbsp;    private String contents;
+&nbsp;    private String weather;
+&nbsp;
+&nbsp;    @ManyToOne(fetch = FetchType.LAZY)
+&nbsp;    @JoinColumn(name = &quot;user_id&quot;, nullable = false)
+&nbsp;    private User user;
+&nbsp;
+<b class="fc">&nbsp;    @OneToMany(mappedBy = &quot;todo&quot;, cascade = CascadeType.REMOVE)</b>
+&nbsp;    private List&lt;Comment&gt; comments = new ArrayList&lt;&gt;();
+&nbsp;
+<b class="fc">&nbsp;    @OneToMany(mappedBy = &quot;todo&quot;, cascade = CascadeType.PERSIST)</b>
+&nbsp;    private List&lt;Manager&gt; managers = new ArrayList&lt;&gt;();
+&nbsp;
+<b class="fc">&nbsp;    public Todo(String title, String contents, String weather, User user) {</b>
+<b class="fc">&nbsp;        this.title = title;</b>
+<b class="fc">&nbsp;        this.contents = contents;</b>
+<b class="fc">&nbsp;        this.weather = weather;</b>
+<b class="fc">&nbsp;        this.user = user;</b>
+<b class="fc">&nbsp;        this.managers.add(new Manager(user, this));</b>
+<b class="fc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    public void update(String title, String contents) {
+<b class="fc">&nbsp;        this.title = title;</b>
+<b class="fc">&nbsp;        this.contents = contents;</b>
+<b class="fc">&nbsp;    }</b>
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-08-30 20:18</div>
+</div>
+</body>
+</html>
