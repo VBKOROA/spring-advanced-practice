@@ -7,7 +7,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 class ExpertApplicationTests {
 
     @Test
-    void contextLoads() {
-    }
+    void contextLoads() {}
 
+    @Test
+    void main() {
+        ExpertApplication.main(new String[] {});
+    }
 }
